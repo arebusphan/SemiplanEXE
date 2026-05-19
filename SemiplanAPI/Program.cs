@@ -1,5 +1,6 @@
 using Microsoft.OpenApi.Models;
-
+using Microsoft.EntityFrameworkCore;
+using SemiplanData;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,7 +14,10 @@ builder.Services.AddSwaggerGen(options =>
         Description = "API documentation for Semiplan"
     });
 });
-
+builder.Services.AddDbContext<SemiplanDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("PostgresConnection")
+    ));
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

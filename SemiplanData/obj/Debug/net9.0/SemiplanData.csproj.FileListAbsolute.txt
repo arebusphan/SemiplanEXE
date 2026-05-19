@@ -10,3 +10,6 @@ C:\Users\ACER\Desktop\Semiplan\SemiplanData\obj\Debug\net9.0\SemiplanData.dll
 C:\Users\ACER\Desktop\Semiplan\SemiplanData\obj\Debug\net9.0\refint\SemiplanData.dll
 C:\Users\ACER\Desktop\Semiplan\SemiplanData\obj\Debug\net9.0\SemiplanData.pdb
 C:\Users\ACER\Desktop\Semiplan\SemiplanData\obj\Debug\net9.0\ref\SemiplanData.dll
+C:\Users\ACER\Desktop\Semiplan\SemiplanData\obj\Debug\net9.0\SemiplanData.csproj.AssemblyReference.cache
+C:\Users\ACER\Desktop\Semiplan\SemiplanData\bin\Debug\net9.0\SemiplanData.runtimeconfig.json
+C:\Users\ACER\Desktop\Semiplan\SemiplanData\obj\Debug\net9.0\SemiplanData.genruntimeconfig.cache
