@@ -9,7 +9,7 @@ public class SemiplanDbContext : DbContext
     {
   
     }
-      DbSet<User> Users { get; set; }
-        DbSet<Subject> Subjects { get; set; }
+     public DbSet<User> Users { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
 
 }
