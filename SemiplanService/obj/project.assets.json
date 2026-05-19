@@ -1,11 +1,48 @@
 {
   "version": 3,
   "targets": {
-    "net9.0": {}
+    "net9.0": {
+      "SemiplanData/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/SemiplanData.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SemiplanData.dll": {}
+        }
+      },
+      "SemiplanRepository/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "SemiplanData": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/SemiplanRepository.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SemiplanRepository.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "SemiplanData/1.0.0": {
+      "type": "project",
+      "path": "../SemiplanData/SemiplanData.csproj",
+      "msbuildProject": "../SemiplanData/SemiplanData.csproj"
+    },
+    "SemiplanRepository/1.0.0": {
+      "type": "project",
+      "path": "../SemiplanRepository/SemiplanRepository.csproj",
+      "msbuildProject": "../SemiplanRepository/SemiplanRepository.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net9.0": []
+    "net9.0": [
+      "SemiplanRepository >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\ACER\\.nuget\\packages\\": {},
@@ -39,7 +76,11 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\ACER\\Desktop\\Semiplan\\SemiplanRepository\\SemiplanRepository.csproj": {
+              "projectPath": "C:\\Users\\ACER\\Desktop\\Semiplan\\SemiplanRepository\\SemiplanRepository.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

@@ -1,0 +1,16 @@
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\bin\Debug\net9.0\SemiplanRepository.deps.json
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\bin\Debug\net9.0\SemiplanRepository.dll
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\bin\Debug\net9.0\SemiplanRepository.pdb
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\bin\Debug\net9.0\SemiplanData.dll
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\bin\Debug\net9.0\SemiplanData.pdb
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\SemiplanRepository.csproj.AssemblyReference.cache
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\SemiplanRepository.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\SemiplanRepository.AssemblyInfoInputs.cache
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\SemiplanRepository.AssemblyInfo.cs
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\SemiplanRepository.csproj.CoreCompileInputs.cache
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\SemiplanRepository.sourcelink.json
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\Semiplan.48BCDC8B.Up2Date
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\SemiplanRepository.dll
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\refint\SemiplanRepository.dll
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\SemiplanRepository.pdb
+C:\Users\ACER\Desktop\Semiplan\SemiplanRepository\obj\Debug\net9.0\ref\SemiplanRepository.dll
