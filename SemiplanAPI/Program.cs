@@ -1,9 +1,12 @@
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using SemiplanData;
+using SemiplanRepository;
+using SemiplanService;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -18,6 +21,10 @@ builder.Services.AddDbContext<SemiplanDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("PostgresConnection")
     ));
+
+
+    builder.Services.AddScoped<SubjectRepository>();
+    builder.Services.AddScoped<SubjectService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -31,7 +38,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.MapControllers();
 app.Run();
 
 

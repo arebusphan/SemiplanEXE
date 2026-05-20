@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SemiplanData")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+19d53a51f2c7f5d8b37ba56ed9d7dbdc56f2b22a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5fba06216d9bdc9d13593f907d390c6e2ead03ba")]
 [assembly: System.Reflection.AssemblyProductAttribute("SemiplanData")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SemiplanData")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
