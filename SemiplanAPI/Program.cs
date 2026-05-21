@@ -22,7 +22,17 @@ builder.Services.AddDbContext<SemiplanDbContext>(options =>
         builder.Configuration.GetConnectionString("PostgresConnection")
     ));
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
     builder.Services.AddScoped<SubjectRepository>();
     builder.Services.AddScoped<SubjectService>();
 var app = builder.Build();
@@ -38,6 +48,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 app.MapControllers();
 app.Run();
 

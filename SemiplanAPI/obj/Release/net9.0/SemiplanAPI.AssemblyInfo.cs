@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SemiplanAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2d5fa3eae3045c09a985d362feb48a4720a2d582")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a618e52cffb37c3736cf0e196aa5d05b86c47fe4")]
 [assembly: System.Reflection.AssemblyProductAttribute("SemiplanAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SemiplanAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
