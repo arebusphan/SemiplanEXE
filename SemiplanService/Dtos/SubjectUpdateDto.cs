@@ -1,8 +1,14 @@
-﻿namespace SemiplanService;
+namespace SemiplanService;
 
 public class SubjectUpdateDto
 {
-public string title { get; set; }
-public int difficulty { get; set; }
-public DateTime examDate { get; set; }
+    public string? Title { get; set; }
+    public string? Description { get; set; }
+    public int? Difficulty { get; set; }
+    public string? Color { get; set; }
+    public DateTime? ExamDate { get; set; }
+    public int? EstimatedStudyHours { get; set; }
+    public int? StudyDaysPerWeek { get; set; }
+    public int? HoursPerDay { get; set; }
+    public string? PreferredStartTime { get; set; }
 }

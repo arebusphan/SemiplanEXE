@@ -1,13 +1,44 @@
 import { Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/Layout";
-import Subjects from "./pages/Subjects";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import DashboardPage from "./pages/DashboardPage";
+import SubjectsPage from "./pages/Subjects";
+import SubjectDetailsPage from "./pages/SubjectDetailsPage";
+import CalendarPage from "./pages/CalendarPage";
+import StudySessionPage from "./pages/StudySessionPage";
+import AssignmentsPage from "./pages/AssignmentsPage";
+import ProgressPage from "./pages/ProgressPage";
+import SettingsPage from "./pages/SettingsPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
+    <AuthProvider>
       <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        
+        <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Layout />}>
-              <Route path="subjects" element={<Subjects />} />
-    </Route>
-  </Routes>
-  )
+            <Route index element={<DashboardPage />} />
+            <Route path="subjects" element={<SubjectsPage />} />
+            <Route path="subjects/:id" element={<SubjectDetailsPage />} />
+            <Route path="calendar" element={<CalendarPage />} />
+            <Route path="study/:id" element={<StudySessionPage />} />
+            <Route path="assignments" element={<AssignmentsPage />} />
+            <Route path="progress" element={<ProgressPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="*" element={
+              <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+                <h1 className="text-4xl font-bold text-slate-800 mb-2">Coming Soon</h1>
+                <p className="text-slate-500">This feature is under construction.</p>
+              </div>
+            } />
+          </Route>
+        </Route>
+      </Routes>
+    </AuthProvider>
+  );
 }

@@ -22,7 +22,7 @@ namespace SemiplanData.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SemiplanData.Subject", b =>
+            modelBuilder.Entity("SemiplanData.Assignment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,34 +33,331 @@ namespace SemiplanData.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime>("Deadline")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EstimatedHours")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<float>("Progress")
+                        .HasColumnType("real");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("color")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.HasKey("Id");
 
-                    b.Property<string>("description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.HasIndex("SubjectId");
 
-                    b.Property<int>("difficulty")
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Assignments");
+                });
+
+            modelBuilder.Entity("SemiplanData.Chapter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.Property<int>("estimatedStudyHours")
-                        .HasColumnType("integer");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("examDate")
+                    b.Property<float>("CompletionPercent")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("status")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Difficulty")
                         .HasColumnType("integer");
 
-                    b.Property<string>("title")
+                    b.Property<int>("EstimatedHours")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("Chapters");
+                });
+
+            modelBuilder.Entity("SemiplanData.Lesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChapterId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Difficulty")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LearningObjectives")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChapterId");
+
+                    b.ToTable("Lessons");
+                });
+
+            modelBuilder.Entity("SemiplanData.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("SemiplanData.Progress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompletedSessions")
+                        .HasColumnType("integer");
+
+                    b.Property<float>("CompletionPercent")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime?>("LastStudiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MissedSessions")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StreakDays")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalStudyHours")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("UserId", "SubjectId")
+                        .IsUnique();
+
+                    b.ToTable("Progresses");
+                });
+
+            modelBuilder.Entity("SemiplanData.Schedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AiGenerated")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("ChapterId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("StudyContent")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("SubjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChapterId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("SemiplanData.Subject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Difficulty")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EstimatedStudyHours")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExamDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("HoursPerDay")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PreferredStartTime")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StudyDaysPerWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Subjects");
                 });
@@ -92,6 +389,9 @@ namespace SemiplanData.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Preferences")
+                        .HasColumnType("text");
+
                     b.Property<string>("University")
                         .IsRequired()
                         .HasColumnType("text");
@@ -101,7 +401,194 @@ namespace SemiplanData.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("SemiplanData.UserAvailability", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("Label")
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserAvailabilities");
+                });
+
+            modelBuilder.Entity("SemiplanData.Assignment", b =>
+                {
+                    b.HasOne("SemiplanData.Subject", "Subject")
+                        .WithMany("Assignments")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SemiplanData.User", "User")
+                        .WithMany("Assignments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SemiplanData.Chapter", b =>
+                {
+                    b.HasOne("SemiplanData.Subject", "Subject")
+                        .WithMany("Chapters")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("SemiplanData.Lesson", b =>
+                {
+                    b.HasOne("SemiplanData.Chapter", "Chapter")
+                        .WithMany("Lessons")
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chapter");
+                });
+
+            modelBuilder.Entity("SemiplanData.Notification", b =>
+                {
+                    b.HasOne("SemiplanData.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SemiplanData.Progress", b =>
+                {
+                    b.HasOne("SemiplanData.Subject", "Subject")
+                        .WithMany("Progresses")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SemiplanData.User", "User")
+                        .WithMany("Progresses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SemiplanData.Schedule", b =>
+                {
+                    b.HasOne("SemiplanData.Chapter", "Chapter")
+                        .WithMany("Schedules")
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SemiplanData.Subject", "Subject")
+                        .WithMany("Schedules")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SemiplanData.User", "User")
+                        .WithMany("Schedules")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chapter");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SemiplanData.Subject", b =>
+                {
+                    b.HasOne("SemiplanData.User", "User")
+                        .WithMany("Subjects")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SemiplanData.UserAvailability", b =>
+                {
+                    b.HasOne("SemiplanData.User", "User")
+                        .WithMany("Availabilities")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SemiplanData.Chapter", b =>
+                {
+                    b.Navigation("Lessons");
+
+                    b.Navigation("Schedules");
+                });
+
+            modelBuilder.Entity("SemiplanData.Subject", b =>
+                {
+                    b.Navigation("Assignments");
+
+                    b.Navigation("Chapters");
+
+                    b.Navigation("Progresses");
+
+                    b.Navigation("Schedules");
+                });
+
+            modelBuilder.Entity("SemiplanData.User", b =>
+                {
+                    b.Navigation("Assignments");
+
+                    b.Navigation("Availabilities");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("Progresses");
+
+                    b.Navigation("Schedules");
+
+                    b.Navigation("Subjects");
                 });
 #pragma warning restore 612, 618
         }

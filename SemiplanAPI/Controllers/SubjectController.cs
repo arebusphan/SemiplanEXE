@@ -1,60 +1,69 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SemiplanService;
+using System.Security.Claims;
 
 namespace SemiplanAPI;
+
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/subjects")]
+[Authorize]
 public class SubjectController : ControllerBase
 {
-private readonly SubjectService _subjectService;
+    private readonly SubjectService _subjectService;
 
-public SubjectController(SubjectService subjectService)
-{
-    _subjectService = subjectService;
-}
-[HttpPost]
-    public async Task<IActionResult> Create(SubjectCreateDto dto)
+    public SubjectController(SubjectService subjectService)
     {
-        await _subjectService.AddSubjectAsync(dto);
-        return Ok();
+        _subjectService = subjectService;
     }
-[HttpGet]
+
+    private int GetUserId() => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+    [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var subjects = await _subjectService.GetAllSubjectsAsync();
+        var subjects = await _subjectService.GetByUserIdAsync(GetUserId());
         return Ok(subjects);
     }
-[HttpGet("{id}")]
+
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
         var subject = await _subjectService.GetSubjectByIdAsync(id);
-        if (subject == null)
-        {
-            return NotFound();
-        }
+        if (subject == null || subject.UserId != GetUserId())
+            return NotFound(new { message = "Subject not found" });
+
         return Ok(subject);
     }
-[HttpPut("{id}")]
+
+    [HttpPost]
+    public async Task<IActionResult> Create(SubjectCreateDto dto)
+    {
+        dto.UserId = GetUserId();
+        var result = await _subjectService.AddSubjectAsync(dto);
+        return Ok(result);
+    }
+
+    [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, SubjectUpdateDto dto)
     {
-        try
-        {
-            await _subjectService.UpdateSubjectAsync(dto, id);
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var subject = await _subjectService.GetSubjectByIdAsync(id);
+        if (subject == null || subject.UserId != GetUserId())
+            return NotFound(new { message = "Subject not found" });
+
+        var result = await _subjectService.UpdateSubjectAsync(id, dto);
+        return Ok(result);
     }
-[HttpDelete("{id}")]
+
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
+        var subject = await _subjectService.GetSubjectByIdAsync(id);
+        if (subject == null || subject.UserId != GetUserId())
+            return NotFound(new { message = "Subject not found" });
+
         var success = await _subjectService.DeleteSubjectAsync(id);
-        if (!success)
-        {
-            return NotFound();
-        }
-        return Ok();
+        if (!success) return NotFound();
+        return Ok(new { message = "Subject deleted successfully" });
     }
 }

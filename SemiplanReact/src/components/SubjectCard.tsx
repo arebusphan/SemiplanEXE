@@ -1,6 +1,5 @@
-
 import { Calendar, Clock3, BookOpen } from "lucide-react";
-import type { Subject } from "../pages/Subjects";
+import type { Subject } from "../types";
 
 interface Props {
   subject: Subject;
@@ -23,7 +22,7 @@ export default function SubjectCard({ subject }: Props) {
       {/* top color */}
       <div
         className="h-2 rounded-full mb-4"
-        style={{ backgroundColor: subject.color }}
+        style={{ backgroundColor: subject.color || '#6366f1' }}
       />
 
       {/* code */}
@@ -36,7 +35,7 @@ export default function SubjectCard({ subject }: Props) {
         {subject.title}
       </h2>
 
-      {/* progress */}
+      {/* progress (mocked for now since not in base Subject) */}
       <div className="mb-4">
         <div className="flex justify-between mb-1">
           <span className="text-sm text-gray-500">
@@ -44,7 +43,7 @@ export default function SubjectCard({ subject }: Props) {
           </span>
 
           <span className="font-semibold text-blue-700">
-            {subject.progress}%
+            {subject.status === 'Completed' ? '100' : '0'}%
           </span>
         </div>
 
@@ -52,8 +51,8 @@ export default function SubjectCard({ subject }: Props) {
           <div
             className="h-2 rounded-full"
             style={{
-              width: `${subject.progress}%`,
-              backgroundColor: subject.color,
+              width: `${subject.status === 'Completed' ? 100 : 0}%`,
+              backgroundColor: subject.color || '#6366f1',
             }}
           />
         </div>
@@ -64,29 +63,29 @@ export default function SubjectCard({ subject }: Props) {
         <div className="flex items-center gap-1">
           <Calendar size={16} />
           <span>
-            {subject.examDate}
+            {new Date(subject.examDate).toLocaleDateString()}
           </span>
         </div>
 
         <div className="flex items-center gap-1">
           <Clock3 size={16} />
           <span>
-            {subject.estimatedHours}h
+            {subject.estimatedStudyHours}h
           </span>
         </div>
 
         <div className="flex items-center gap-1">
           <BookOpen size={16} />
           <span>
-            {subject.chapterCount} ch
+            Chapters
           </span>
         </div>
       </div>
 
       {/* completed */}
       <p className="text-sm text-gray-400">
-        {subject.completedHours}/
-        {subject.estimatedHours}h completed
+        {subject.status === 'Completed' ? subject.estimatedStudyHours : 0}/
+        {subject.estimatedStudyHours}h completed
       </p>
     </div>
   );
