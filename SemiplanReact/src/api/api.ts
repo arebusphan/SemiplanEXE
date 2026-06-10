@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://localhost:5259/api",
+    baseURL: "https://semiplanexe.onrender.com/api",
 });
 
 // Add JWT token to requests
