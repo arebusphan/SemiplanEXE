@@ -120,16 +120,13 @@ builder.Services.AddScoped<SyllabusService>(sp =>
 builder.Services.AddHostedService<StudyReminderBackgroundService>();
 
 var app = builder.Build();
+app.UseSwagger();
 
-if (app.Environment.IsDevelopment())
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Semiplan API v1");
-        options.RoutePrefix = "swagger";
-    });
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Semiplan API v1");
+    options.RoutePrefix = "swagger";
+});
 
 // Seed admin account
 using (var scope = app.Services.CreateScope())
