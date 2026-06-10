@@ -96,10 +96,11 @@ builder.Services.AddScoped<AssignmentRepository>();
 builder.Services.AddScoped<NotificationRepository>();
 builder.Services.AddScoped<ProgressRepository>();
 builder.Services.AddScoped<UserAvailabilityRepository>();
+builder.Services.AddScoped<PremiumPaymentRepository>();
 
 // Services
 builder.Services.AddScoped<AuthService>(sp =>
-    new AuthService(sp.GetRequiredService<UserRepository>(), jwtSecret));
+    new AuthService(sp.GetRequiredService<UserRepository>(), jwtSecret, sp.GetRequiredService<EmailService>()));
 builder.Services.AddScoped<SubjectService>();
 builder.Services.AddScoped<ChapterService>();
 builder.Services.AddScoped<ScheduleService>();
@@ -107,12 +108,16 @@ builder.Services.AddScoped<AssignmentService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<ProgressService>();
 builder.Services.AddScoped<UserAvailabilityService>();
+builder.Services.AddScoped<PremiumService>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<SyllabusService>(sp =>
     new SyllabusService(
         sp.GetRequiredService<ChapterRepository>(),
         sp.GetRequiredService<SubjectRepository>(),
         sp.GetRequiredService<IConfiguration>()
     ));
+
+builder.Services.AddHostedService<StudyReminderBackgroundService>();
 
 var app = builder.Build();
 
@@ -124,6 +129,29 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Semiplan API v1");
         options.RoutePrefix = "swagger";
     });
+}
+
+// Seed admin account
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<SemiplanDbContext>();
+    if (!db.Users.Any(u => u.Email == "admin@admin.com"))
+    {
+        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes("admin123"));
+        var hash = Convert.ToBase64String(bytes);
+        db.Users.Add(new SemiplanData.User
+        {
+            Name = "Admin",
+            Email = "admin@admin.com",
+            PasswordHash = hash,
+            Role = "admin",
+            IsPremium = true,
+            Major = "System Administration",
+            University = "SemiPlan Admin"
+        });
+        db.SaveChanges();
+    }
 }
 
 app.UseHttpsRedirection();

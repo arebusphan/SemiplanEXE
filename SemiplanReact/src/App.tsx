@@ -8,9 +8,8 @@ import SubjectsPage from "./pages/Subjects";
 import SubjectDetailsPage from "./pages/SubjectDetailsPage";
 import CalendarPage from "./pages/CalendarPage";
 import StudySessionPage from "./pages/StudySessionPage";
-import AssignmentsPage from "./pages/AssignmentsPage";
-import ProgressPage from "./pages/ProgressPage";
 import SettingsPage from "./pages/SettingsPage";
+import AdminPanelPage from "./pages/AdminPanelPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
@@ -27,9 +26,8 @@ export default function App() {
             <Route path="subjects/:id" element={<SubjectDetailsPage />} />
             <Route path="calendar" element={<CalendarPage />} />
             <Route path="study/:id" element={<StudySessionPage />} />
-            <Route path="assignments" element={<AssignmentsPage />} />
-            <Route path="progress" element={<ProgressPage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="admin" element={<AdminPanelPage />} />
             <Route path="*" element={
               <div className="flex flex-col items-center justify-center h-[60vh] text-center">
                 <h1 className="text-4xl font-bold text-slate-800 mb-2">Coming Soon</h1>

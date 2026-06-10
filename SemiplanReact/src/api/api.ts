@@ -244,4 +244,30 @@ export const generateStudyContent = async (scheduleId: number) => {
     return res.data.content as string;
 };
 
+// ─── Premium ─────────────────────────────────────
+export const submitPremiumRequest = async (transactionInfo: string = "SEMIPLAN_PREMIUM") => {
+    const res = await API.post("/premium/request", { transactionInfo });
+    return res.data;
+};
+
+export const getPremiumStatus = async () => {
+    const res = await API.get("/premium/status");
+    return res.data;
+};
+
+export const getAdminPendingPayments = async () => {
+    const res = await API.get("/premium/admin/pending");
+    return res.data;
+};
+
+export const getAdminAllPayments = async () => {
+    const res = await API.get("/premium/admin/all");
+    return res.data;
+};
+
+export const adminApprovePayment = async (paymentId: number, approve: boolean) => {
+    const res = await API.put(`/premium/admin/${paymentId}`, { approve });
+    return res.data;
+};
+
 export default API;

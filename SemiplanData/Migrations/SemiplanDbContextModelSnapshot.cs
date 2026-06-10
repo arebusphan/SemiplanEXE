@@ -195,6 +195,43 @@ namespace SemiplanData.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("SemiplanData.PremiumPayment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ApprovedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TransactionInfo")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PremiumPayments");
+                });
+
             modelBuilder.Entity("SemiplanData.Progress", b =>
                 {
                     b.Property<int>("Id")
@@ -269,6 +306,9 @@ namespace SemiplanData.Migrations
 
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("interval");
+
+                    b.Property<bool>("IsReminded")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Priority")
                         .HasColumnType("integer");
@@ -377,6 +417,9 @@ namespace SemiplanData.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsPremium")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Major")
                         .IsRequired()
                         .HasColumnType("text");
@@ -390,6 +433,10 @@ namespace SemiplanData.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Preferences")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("University")
@@ -492,6 +539,17 @@ namespace SemiplanData.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SemiplanData.PremiumPayment", b =>
+                {
+                    b.HasOne("SemiplanData.User", "User")
+                        .WithMany("PremiumPayments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SemiplanData.Progress", b =>
                 {
                     b.HasOne("SemiplanData.Subject", "Subject")
@@ -583,6 +641,8 @@ namespace SemiplanData.Migrations
                     b.Navigation("Availabilities");
 
                     b.Navigation("Notifications");
+
+                    b.Navigation("PremiumPayments");
 
                     b.Navigation("Progresses");
 

@@ -18,6 +18,7 @@ public class SemiplanDbContext : DbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<Progress> Progresses { get; set; }
     public DbSet<UserAvailability> UserAvailabilities { get; set; }
+    public DbSet<PremiumPayment> PremiumPayments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -120,6 +121,15 @@ public class SemiplanDbContext : DbContext
              .OnDelete(DeleteBehavior.Restrict);
 
             e.HasIndex(p => new { p.UserId, p.SubjectId }).IsUnique();
+        });
+
+        // PremiumPayment -> User
+        modelBuilder.Entity<PremiumPayment>(e =>
+        {
+            e.HasOne(pp => pp.User)
+             .WithMany(u => u.PremiumPayments)
+             .HasForeignKey(pp => pp.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

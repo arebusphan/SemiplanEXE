@@ -12,6 +12,7 @@ import {
     Clock, ChevronLeft, ChevronRight, Wand2, X, 
     CheckCircle2, BrainCircuit, BookOpen, Sparkles, Lock, Trash2, RefreshCw, Upload, Plus
 } from "lucide-react";
+import PremiumModal from "../components/PremiumModal";
 
 export default function CalendarPage() {
     const { user } = useAuth();
@@ -21,6 +22,7 @@ export default function CalendarPage() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [availabilities, setAvailabilities] = useState<any[]>([]);
+    const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
 
     // Sync Calendar modal state
     const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
@@ -618,7 +620,13 @@ export default function CalendarPage() {
                         
 
                         <button 
-                            onClick={() => navigate(`/study/${selectedSession.id}`)}
+                            onClick={() => {
+                                if (user && user.isPremium) {
+                                    navigate(`/study/${selectedSession.id}`);
+                                } else {
+                                    setIsPremiumModalOpen(true);
+                                }
+                            }}
                             className="w-full mt-4 bg-primary-600 text-white py-3 rounded-xl font-bold hover:bg-primary-700 transition-colors flex items-center justify-center gap-2"
                         >
                             <BookOpen className="w-5 h-5" /> Start Studying
@@ -830,6 +838,8 @@ export default function CalendarPage() {
                     </div>
                 </div>
             )}
+
+            <PremiumModal isOpen={isPremiumModalOpen} onClose={() => setIsPremiumModalOpen(false)} />
         </div>
     </div>
   );

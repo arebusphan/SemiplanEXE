@@ -47,6 +47,17 @@ export default function DashboardPage() {
           </h1>
           <p className="text-slate-500 text-sm">Here is your learning overview.</p>
         </div>
+        {user?.isPremium && (
+          <div className="bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl px-6 py-4 text-white shadow-lg shadow-orange-500/25 flex items-center gap-4 animate-fade-in-right">
+            <div className="p-2 bg-white/20 rounded-full">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg leading-tight">Premium Unlocked</h3>
+              <p className="text-sm text-orange-50 font-medium">Enjoy unlimited AI Study Sessions</p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

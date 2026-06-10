@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import {
   LayoutDashboard,
   BookOpen,
@@ -8,19 +9,24 @@ import {
   Settings,
   GraduationCap,
   Sparkles,
+  ShieldCheck,
 } from 'lucide-react'
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/subjects', icon: BookOpen, label: 'Subjects' },
   { to: '/calendar', icon: CalendarDays, label: 'Calendar' },
-  { to: '/assignments', icon: ClipboardList, label: 'Assignments' },
-  { to: '/progress', icon: BarChart3, label: 'Progress' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
 
 export default function Sidebar() {
   const location = useLocation()
+  const { user } = useAuth()
+
+  const dynamicNavItems = [
+    ...navItems,
+    ...(user?.role === 'admin' ? [{ to: '/admin', icon: ShieldCheck, label: 'Admin Panel' }] : [])
+  ]
 
   return (
     <aside
@@ -54,7 +60,7 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map(item => (
+        {dynamicNavItems.map(item => (
           <NavLink
             key={item.to}
             to={item.to}

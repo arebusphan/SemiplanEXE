@@ -1,4 +1,4 @@
-import { Bell, LogOut, User as UserIcon, Search } from 'lucide-react'
+import { Bell, LogOut, User as UserIcon, Search, Crown } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -49,8 +49,11 @@ export default function Navbar() {
                   </span>
                 </div>
                 <div className="hidden md:block text-left">
-                  <p className="text-sm font-semibold text-slate-700 leading-tight">{user?.name || 'User'}</p>
-                  <p className="text-[10px] text-slate-400">{user?.major || 'Student'}</p>
+                  <p className="text-sm font-semibold text-slate-700 leading-tight flex items-center gap-1.5">
+                    {user?.name || 'User'}
+                    {user?.isPremium && <Crown className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />}
+                  </p>
+                  <p className="text-[10px] text-slate-400">{user?.role === 'admin' ? 'Administrator' : user?.major || 'Student'}</p>
                 </div>
               </button>
 

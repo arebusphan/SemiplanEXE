@@ -1,0 +1,19 @@
+.dockerignore
+.env
+.git
+.gitignore
+.vs/
+.vscode/
+
+# Thư mục build của các dự án
+**/bin/
+**/obj/
+**/TestResults/
+
+# Tránh copy frontend vào container backend
+SemiplanReact/
+node_modules/
+
+# Files rác của OS
+.DS_Store
+Thumbs.db

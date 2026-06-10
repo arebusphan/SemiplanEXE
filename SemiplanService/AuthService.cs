@@ -11,11 +11,13 @@ public class AuthService
 {
     private readonly UserRepository _userRepository;
     private readonly string _jwtSecret;
+    private readonly EmailService _emailService;
 
-    public AuthService(UserRepository userRepository, string jwtSecret)
+    public AuthService(UserRepository userRepository, string jwtSecret, EmailService emailService)
     {
         _userRepository = userRepository;
         _jwtSecret = jwtSecret;
+        _emailService = emailService;
     }
 
     public async Task<LoginResponseDto> RegisterAsync(RegisterDto dto)
@@ -40,6 +42,19 @@ public class AuthService
         await _userRepository.AddUserAsync(user);
 
         var token = GenerateJwtToken(user);
+
+        // Send Welcome Email
+        var subject = "Chào mừng bạn đến với SemiPlan! 🚀";
+        var body = $@"
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;'>
+                <h2 style='color: #4f46e5;'>Xin chào {user.Name},</h2>
+                <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>SemiPlan - AI Study Planner</strong>.</p>
+                <p>Hãy bắt đầu tạo lịch học thông minh và chinh phục các môn học của bạn ngay hôm nay!</p>
+                <br/>
+                <p><strong>Đội ngũ SemiPlan</strong></p>
+            </div>";
+        _ = _emailService.SendEmailAsync(user.Email, subject, body); // Fire and forget
+
         return new LoginResponseDto
         {
             Token = token,
@@ -108,7 +123,9 @@ public class AuthService
             Email = user.Email,
             Major = user.Major,
             University = user.University,
-            Preferences = user.Preferences
+            Preferences = user.Preferences,
+            Role = user.Role,
+            IsPremium = user.IsPremium
         };
     }
 

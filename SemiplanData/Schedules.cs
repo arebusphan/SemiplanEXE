@@ -16,6 +16,7 @@ public class Schedule
     public int Priority { get; set; }
     public ScheduleStatus Status { get; set; } = ScheduleStatus.Pending;
     public bool AiGenerated { get; set; }
+    public bool IsReminded { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 

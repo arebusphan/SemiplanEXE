@@ -23,6 +23,8 @@ public class UserResponseDto
     public string Major { get; set; } = null!;
     public string University { get; set; } = null!;
     public string? Preferences { get; set; }
+    public string Role { get; set; } = "user";
+    public bool IsPremium { get; set; }
 }
 
 public class UpdatePreferencesDto

@@ -4,6 +4,20 @@ export interface User {
     email: string;
     major: string;
     university: string;
+    role: string;
+    isPremium: boolean;
+}
+
+export interface PremiumPayment {
+    id: number;
+    userId: number;
+    userName: string;
+    userEmail: string;
+    transactionInfo: string;
+    amount: number;
+    status: string;
+    createdAt: string;
+    approvedAt?: string;
 }
 
 export interface Subject {
