@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getDashboard } from '../api/api';
+import PremiumModal from '../components/PremiumModal';
 import type { Dashboard } from '../types';
 import {
   Sparkles,
@@ -12,8 +13,21 @@ import {
 export default function DashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
+  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
+
+  useEffect(() => {
+    // Check for payment callback params
+    const searchParams = new URLSearchParams(location.search);
+    const paymentStatus = searchParams.get('payment');
+    if (paymentStatus === 'success' || paymentStatus === 'cancel') {
+        setIsPremiumModalOpen(true);
+        // Clean up URL without reloading
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [location]);
 
   useEffect(() => {
     if (user) {
@@ -184,6 +198,7 @@ export default function DashboardPage() {
           
         </div>
       </div>
+      <PremiumModal isOpen={isPremiumModalOpen} onClose={() => setIsPremiumModalOpen(false)} />
     </div>
   );
 }

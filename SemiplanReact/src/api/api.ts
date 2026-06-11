@@ -270,4 +270,15 @@ export const adminApprovePayment = async (paymentId: number, approve: boolean) =
     return res.data;
 };
 
+// ─── PayOS Payment ──────────────────────────────
+export const createPayOsPayment = async (returnUrl: string, cancelUrl: string) => {
+    const res = await API.post("/payos/create-payment", { returnUrl, cancelUrl });
+    return res.data;
+};
+
+export const getPayOsPaymentStatus = async () => {
+    const res = await API.get("/payos/payment-status");
+    return res.data;
+};
+
 export default API;

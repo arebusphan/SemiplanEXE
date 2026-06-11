@@ -2,11 +2,13 @@ import { Bell, LogOut, User as UserIcon, Search, Crown } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import PremiumModal from './PremiumModal'
 
 export default function Navbar() {
   const { user, logout, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false)
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-white/70 backdrop-blur-xl border-b border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
@@ -65,6 +67,14 @@ export default function Navbar() {
                   >
                     <UserIcon className="w-4 h-4" /> Profile
                   </button>
+                  {!user?.isPremium && (
+                    <button
+                      onClick={() => { setIsPremiumModalOpen(true); setShowUserMenu(false); }}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50 transition-colors"
+                    >
+                      <Crown className="w-4 h-4" /> Upgrade to Premium
+                    </button>
+                  )}
                   <hr className="my-1 border-slate-100" />
                   <button
                     onClick={() => { logout(); setShowUserMenu(false); navigate('/login'); }}
@@ -85,6 +95,7 @@ export default function Navbar() {
           )}
         </div>
       </div>
+      <PremiumModal isOpen={isPremiumModalOpen} onClose={() => setIsPremiumModalOpen(false)} />
     </header>
   )
 }

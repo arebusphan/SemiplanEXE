@@ -60,4 +60,11 @@ public class PremiumPaymentRepository
         _context.PremiumPayments.Update(payment);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<PremiumPayment?> GetByOrderCodeAsync(long orderCode)
+    {
+        return await _context.PremiumPayments
+            .Include(pp => pp.User)
+            .FirstOrDefaultAsync(pp => pp.PayOsOrderCode == orderCode);
+    }
 }

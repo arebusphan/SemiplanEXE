@@ -11,6 +11,11 @@ public class PremiumPayment
     public DateTime? ApprovedAt { get; set; }
     public int? ApprovedByUserId { get; set; } // Admin who approved
 
+    // PayOS integration fields
+    public long? PayOsOrderCode { get; set; }
+    public string? CheckoutUrl { get; set; }
+    public string? PayOsTransactionId { get; set; }
+
     // Navigation
     public User User { get; set; } = null!;
 }
@@ -19,5 +24,6 @@ public enum PremiumPaymentStatus
 {
     Pending = 0,
     Approved = 1,
-    Rejected = 2
+    Rejected = 2,
+    Cancelled = 3
 }

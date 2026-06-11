@@ -6,6 +6,7 @@ using System.Text;
 using SemiplanData;
 using SemiplanRepository;
 using SemiplanService;
+using PayOS;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -110,6 +111,13 @@ builder.Services.AddScoped<ProgressService>();
 builder.Services.AddScoped<UserAvailabilityService>();
 builder.Services.AddScoped<PremiumService>();
 builder.Services.AddScoped<EmailService>();
+
+// PayOS payment gateway
+var payOsClientId = builder.Configuration["PayOS:ClientId"] ?? "";
+var payOsApiKey = builder.Configuration["PayOS:ApiKey"] ?? "";
+var payOsChecksumKey = builder.Configuration["PayOS:ChecksumKey"] ?? "";
+builder.Services.AddSingleton(new PayOSClient(payOsClientId, payOsApiKey, payOsChecksumKey));
+builder.Services.AddScoped<PayOsService>();
 builder.Services.AddScoped<SyllabusService>(sp =>
     new SyllabusService(
         sp.GetRequiredService<ChapterRepository>(),
