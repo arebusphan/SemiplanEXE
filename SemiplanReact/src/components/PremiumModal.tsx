@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { X, CheckCircle2, Sparkles, ShieldCheck, CreditCard, Loader2, ExternalLink, RefreshCw } from 'lucide-react';
 import { createPayOsPayment, getPayOsPaymentStatus } from '../api/api';
 import { useAuth } from '../context/AuthContext';
@@ -93,7 +94,7 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-3xl p-8 w-[480px] shadow-2xl relative overflow-hidden">
                 {/* Decorative background */}
@@ -224,6 +225,7 @@ export default function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

@@ -157,6 +157,24 @@ using (var scope = app.Services.CreateScope())
         });
         db.SaveChanges();
     }
+
+    if (!db.Users.Any(u => u.Email == "admin@gmail.com"))
+    {
+        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes("admin123"));
+        var hash = Convert.ToBase64String(bytes);
+        db.Users.Add(new SemiplanData.User
+        {
+            Name = "Admin",
+            Email = "admin@gmail.com",
+            PasswordHash = hash,
+            Role = "admin",
+            IsPremium = true,
+            Major = "System Administration",
+            University = "SemiPlan Admin"
+        });
+        db.SaveChanges();
+    }
 }
 
 app.UseHttpsRedirection();

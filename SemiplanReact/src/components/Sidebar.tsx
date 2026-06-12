@@ -87,18 +87,6 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Bottom card */}
-      <div className="p-4">
-        <div className="rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 p-4 text-white shadow-lg shadow-primary-500/25">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider opacity-90">AI Powered</span>
-          </div>
-          <p className="text-xs opacity-80 leading-relaxed">
-            Upload your syllabus and let AI generate your study plan automatically.
-          </p>
-        </div>
-      </div>
     </aside>
   )
 }

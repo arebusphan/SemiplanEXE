@@ -27,6 +27,17 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
+          {/* Upgrade Button */}
+          {isAuthenticated && !user?.isPremium && (
+            <button
+              onClick={() => setIsPremiumModalOpen(true)}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-white text-sm font-semibold hover:shadow-lg hover:shadow-orange-500/30 transition-all duration-200 transform hover:-translate-y-0.5"
+            >
+              <Crown className="w-4 h-4" />
+              <span>Get Premium</span>
+            </button>
+          )}
+
           {/* Notifications */}
           <button
             onClick={() => navigate('/notifications')}
