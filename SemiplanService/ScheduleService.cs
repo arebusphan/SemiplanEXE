@@ -358,7 +358,7 @@ The JSON must have this exact structure (with week1, week2, etc. containing the 
         var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync(
-            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={_geminiApiKey}",
+            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={_geminiApiKey}",
             content);
 
         if (!response.IsSuccessStatusCode)
@@ -495,7 +495,7 @@ Do not wrap the entire response in a single markdown code block; just return the
         var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync(
-            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={_geminiApiKey}",
+            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={_geminiApiKey}",
             content);
 
         if (!response.IsSuccessStatusCode)
@@ -594,7 +594,7 @@ Do not wrap in markdown, return raw JSON.";
         var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync(
-            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={_geminiApiKey}",
+            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={_geminiApiKey}",
             content);
 
         if (!response.IsSuccessStatusCode)
@@ -736,7 +736,7 @@ IMPORTANT: You MUST return valid JSON. Do not include markdown code block wrappe
         var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync(
-            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={_geminiApiKey}",
+            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={_geminiApiKey}",
             content);
 
         if (!response.IsSuccessStatusCode)
