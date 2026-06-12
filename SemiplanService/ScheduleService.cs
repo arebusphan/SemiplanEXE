@@ -165,26 +165,23 @@ public class ScheduleService
         var subject = await _subjectRepository.GetSubjectByIdAsync(dto.SubjectId);
         if (subject == null) throw new Exception("Subject not found.");
 
-        // Resolve nullable dates: Use Subject ExamDate for endDate if valid
+        // Resolve dates
         var startDate = dto.StartDate ?? DateTime.UtcNow.Date;
         var endDate = dto.EndDate ?? (subject.ExamDate > startDate ? subject.ExamDate : startDate.AddDays(30));
 
-        // Resolve study preferences: Subject settings are primary, DTO values override if provided
+        // Resolve study preferences (subject settings take priority)
         var maxHoursPerDay = dto.MaxHoursPerDay != 4 ? dto.MaxHoursPerDay : subject.HoursPerDay;
         var studyDaysPerWeek = subject.StudyDaysPerWeek;
         var preferredStartTime = dto.PreferredStartTime != "09:00" ? dto.PreferredStartTime : subject.PreferredStartTime;
 
-        // Fallbacks for existing subjects that might have 0 in the database
         if (maxHoursPerDay <= 0) maxHoursPerDay = 2;
         if (studyDaysPerWeek <= 0) studyDaysPerWeek = 2;
         if (string.IsNullOrEmpty(preferredStartTime)) preferredStartTime = "09:00";
 
-        // Build preferred days list from studyDaysPerWeek count (spread evenly across the week)
+        // Build preferred days list
         var preferredDaysList = dto.PreferredDaysOfWeek;
         if (preferredDaysList.Count == 7 && studyDaysPerWeek < 7)
         {
-            // Default DTO has all 7 days - override with subject's studyDaysPerWeek
-            // Spread days evenly: e.g. 2 days/week → Mon, Thu; 3 days/week → Mon, Wed, Fri
             var spacing = 7.0 / studyDaysPerWeek;
             preferredDaysList = Enumerable.Range(0, studyDaysPerWeek)
                 .Select(i => (int)Math.Round(i * spacing) % 7)
@@ -196,9 +193,7 @@ public class ScheduleService
         if (!chapters.Any()) throw new Exception("No chapters found. Please run AI syllabus analysis first.");
 
         var allExistingSchedules = await _repository.GetByUserIdAsync(dto.UserId);
-        var busyBlocks = allExistingSchedules.Where(s => s.SubjectId == null).ToList();
 
-        // Optionally clear existing AI-generated schedules for this subject
         if (dto.ClearExisting)
         {
             var toDelete = allExistingSchedules.Where(s => s.SubjectId == dto.SubjectId && s.AiGenerated).ToList();
@@ -213,39 +208,11 @@ public class ScheduleService
 
         if (!pendingChapters.Any()) throw new Exception("All chapters are already completed.");
 
-        // Calculate total lessons for even distribution guidance
-        var totalLessons = pendingChapters.SelectMany(c => c.Lessons).Count();
-        var daysUntilExam = (endDate - startDate).Days;
-        var weeksUntilExam = Math.Max(1, (int)Math.Ceiling(daysUntilExam / 7.0));
-        var lessonsPerWeek = totalLessons > 0 ? Math.Max(1, (int)Math.Ceiling((double)totalLessons / weeksUntilExam)) : 2;
-
-        var chaptersJson = JsonSerializer.Serialize(pendingChapters.Select(c => new {
-            chapterId = c.Id,
-            chapterName = c.Title,
-            difficulty = c.Difficulty,
-            estimatedHours = c.EstimatedHours,
-            lessons = c.Lessons.Select(l => new {
-                lessonName = l.Title,
-                durationMinutes = l.DurationMinutes,
-                difficulty = l.Difficulty,
-                learningObjectives = l.LearningObjectives
-            })
-        }), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-
-        var busySlotsStr = string.Join("\n", busyBlocks.Select(b => $"{b.Date:yyyy-MM-dd} {b.StartTime:hh\\:mm} - {b.EndTime:hh\\:mm}: {b.Title}"));
-        var preferredDays = string.Join(", ", preferredDaysList.Select(d => ((DayOfWeek)d).ToString()));
-
-        var examDateStr = subject.ExamDate > startDate ? subject.ExamDate.ToString("yyyy-MM-dd") : "Not specified";
-
+        // Get user preferences
         var user = await _userRepository.GetByIdAsync(dto.UserId);
         var availabilities = await _userAvailabilityRepository.GetByUserIdAsync(dto.UserId);
-        
-        var freeSlots = availabilities.Where(a => a.Type == AvailabilityType.Free).ToList();
         var fixedBusySlots = availabilities.Where(a => a.Type == AvailabilityType.Busy).ToList();
-        
-        var freeSlotsStr = freeSlots.Any() ? string.Join("\n", freeSlots.Select(a => $"{a.DayOfWeek}: {a.StartTime:hh\\:mm} - {a.EndTime:hh\\:mm}")) : "None defined";
-        var fixedBusySlotsStr = fixedBusySlots.Any() ? string.Join("\n", fixedBusySlots.Select(a => $"{a.DayOfWeek}: {a.StartTime:hh\\:mm} - {a.EndTime:hh\\:mm} ({a.Label})")) : "None defined";
-        
+
         var maxSessionMinutes = 120;
         var daysOff = new List<int>();
         if (!string.IsNullOrEmpty(user?.Preferences))
@@ -256,185 +223,117 @@ public class ScheduleService
             if (prefs.TryGetProperty("daysOff", out var daysOffProp) && daysOffProp.ValueKind == JsonValueKind.Array)
                 daysOff = daysOffProp.EnumerateArray().Select(e => e.GetInt32()).ToList();
         }
-        var daysOffStr = daysOff.Any() ? string.Join(", ", daysOff.Select(d => ((DayOfWeek)d).ToString())) : "None";
 
-        var prompt = $@"
-# Smart Study Schedule Generation Prompt
-You are an expert educational planning AI.
-You MUST generate a comprehensive study schedule that maps EVERY SINGLE LESSON provided in the input JSON to a specific date and time slot.
-Do NOT summarize or skip any lessons. Every lesson in the pending chapters MUST be assigned to at least one study session.
+        // Flatten all lessons in chapter/lesson order
+        var allLessons = pendingChapters
+            .SelectMany(c => c.Lessons
+                .OrderBy(l => l.OrderIndex)
+                .Select(l => new { Chapter = c, Lesson = l }))
+            .ToList();
 
-## Input
+        // Determine exam date and study period end
+        var examDate = subject.ExamDate > startDate ? subject.ExamDate.Date : (DateTime?)null;
+        var studyEndDate = examDate.HasValue ? examDate.Value.AddDays(-3) : endDate.Date;
 
-### Subject Information
-* Subject Name: {subject.Title}
-* Exam Date: {examDateStr}
-* Subject Difficulty: {subject.Difficulty}
-
-### Chapters & Lessons (YOU MUST MAP ALL OF THESE)
-{chaptersJson}
-
-### Distribution Target
-* Total Lessons: {totalLessons}
-* Weeks Until Exam: {weeksUntilExam}
-* Target Lessons Per Week: ~{lessonsPerWeek} (distribute EVENLY — each week should have approximately the same number of lessons)
-
-### Student Preferences
-* Available Study Period: {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}
-* Preferred Study Time (Start): {preferredStartTime}
-* Study Days Per Week: {studyDaysPerWeek} (STRICT - do NOT schedule more than {studyDaysPerWeek} study days per week)
-* Maximum Study Hours Per Day: {maxHoursPerDay} (STRICT - each day's total study time must NOT exceed {maxHoursPerDay} hours)
-* Max Session Duration: {maxSessionMinutes} minutes
-* Preferred Study Days: {preferredDays}
-* Days Off: {daysOffStr} (DO NOT schedule anything on these days)
-* User Free Time Slots:
-{freeSlotsStr}
-* User Fixed Schedules (Busy):
-{fixedBusySlotsStr}
-
-### One-off Busy Time Slots
-{busySlotsStr}
-
-# Scheduling Rules
-## Rule 1 - Completeness (CRITICAL)
-You MUST generate a schedule block for EVERY lesson provided in the Chapters JSON. All {totalLessons} lessons must be covered.
-
-## Rule 2 - EVEN Distribution Across Weeks (CRITICAL)
-You MUST distribute lessons EVENLY across the available weeks. Each week should contain approximately {lessonsPerWeek} lesson(s).
-Do NOT front-load — do NOT cluster all lessons at the beginning.
-Do NOT back-load — do NOT cluster all lessons at the end.
-Spread them UNIFORMLY from week 1 to the last week before exam.
-
-## Rule 3 - Exam Day
-If the Exam Date is specified ({examDateStr}), you MUST include an ""📝 EXAM DAY: {subject.Title}"" entry on that exact date.
-This exam entry should have chapterId set to null, duration of 120, and a description mentioning the final exam.
-All study lessons MUST be completed BEFORE the exam date. Reserve the last 2-3 days before the exam for Final Review only.
-
-## Rule 4 - Respect Availability & Limits
-Only schedule lessons on the Preferred Study Days and DO NOT overlap with Busy Time Slots.
-Strictly adhere to the maximum study hours per day ({maxHoursPerDay}) and maximum study days per week ({studyDaysPerWeek}).
-
-## Rule 5 - Spaced Repetition & Reviews
-Include Review Sessions (Chapter Review, Mid-term Review, Final Exam Review). Mix difficulty levels to prevent burnout.
-
-# Schedule Output Format
-IMPORTANT: You MUST return valid JSON. Do not include markdown code block wrappers (like ```json). Just the raw JSON.
-If a session is a review session not tied to a specific chapter, set chapterId to null or omit it.
-The JSON must have this exact structure (with week1, week2, etc. containing the scheduled sessions):
-
-{{
-""week1"": [
-{{
-""date"": ""2026-06-01"",
-""startTime"": ""19:00"",
-""endTime"": ""20:00"",
-""subject"": ""{subject.Title}"",
-""chapterId"": 1,
-""title"": ""Lesson Title or Review Name"",
-""description"": ""Brief description of what to study"",
-""duration"": 60
-}}
-],
-""week2"": [],
-""examReadinessScore"": 85,
-""riskLevel"": ""Low"",
-""expectedCompletionDate"": ""2026-06-24"",
-""totalStudyHours"": 42,
-""bufferHours"": 8,
-""recommendations"": [
-""Focus on Database Design this week""
-]
-}}
-";
-
-        var requestBody = new
+        // Build list of valid study dates
+        var studyDates = new List<DateTime>();
+        var cur = startDate.Date;
+        while (cur <= studyEndDate)
         {
-            contents = new[] { new { parts = new[] { new { text = prompt } } } },
-            generationConfig = new { responseMimeType = "application/json" }
-        };
-
-        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        var jsonBody = JsonSerializer.Serialize(requestBody, jsonOptions);
-        var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-        var response = await _httpClient.PostAsync(
-            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={_geminiApiKey}",
-            content);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            var errorContent = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Failed to generate schedule from AI: {response.StatusCode} - {errorContent}");
+            int dow = (int)cur.DayOfWeek;
+            if (preferredDaysList.Contains(dow) && !daysOff.Contains(dow))
+                studyDates.Add(cur);
+            cur = cur.AddDays(1);
         }
 
-        var jsonResponse = await response.Content.ReadAsStringAsync();
-        using var document = JsonDocument.Parse(jsonResponse);
-        var generatedText = document.RootElement
-            .GetProperty("candidates")[0]
-            .GetProperty("content")
-            .GetProperty("parts")[0]
-            .GetProperty("text")
-            .GetString();
+        if (!studyDates.Any())
+            throw new Exception("No available study dates found based on your preferences. Please check your settings.");
 
-        if (string.IsNullOrEmpty(generatedText)) throw new Exception("AI returned empty content.");
-        generatedText = generatedText.Trim();
-        if (generatedText.StartsWith("```json"))
-        {
-            generatedText = generatedText.Substring(7);
-            if (generatedText.EndsWith("```")) generatedText = generatedText.Substring(0, generatedText.Length - 3);
-        }
-
-        using var aiJson = JsonDocument.Parse(generatedText);
+        // Distribute lessons evenly: calculate how many lessons per day
+        var startTimeSpan = TimeSpan.TryParse(preferredStartTime, out var pts) ? pts : TimeSpan.FromHours(9);
+        int lessonIdx = 0;
         var schedulesToCreate = new List<Schedule>();
 
-        foreach (var prop in aiJson.RootElement.EnumerateObject())
+        foreach (var date in studyDates)
         {
-            if (prop.Name.StartsWith("week", StringComparison.OrdinalIgnoreCase) && prop.Value.ValueKind == JsonValueKind.Array)
+            if (lessonIdx >= allLessons.Count) break;
+
+            // Busy slots for this day of week (sorted)
+            var dayBusySlots = fixedBusySlots
+                .Where(a => a.DayOfWeek == (int)date.DayOfWeek)
+                .OrderBy(a => a.StartTime)
+                .ToList();
+
+            var currentTime = startTimeSpan;
+            int minutesUsedToday = 0;
+            int maxMinutesToday = maxHoursPerDay * 60;
+
+            while (lessonIdx < allLessons.Count && minutesUsedToday < maxMinutesToday)
             {
-                foreach (var item in prop.Value.EnumerateArray())
+                var item = allLessons[lessonIdx];
+                var duration = item.Lesson.DurationMinutes > 0 ? item.Lesson.DurationMinutes : 60;
+                duration = Math.Min(duration, maxSessionMinutes);
+
+                if (minutesUsedToday + duration > maxMinutesToday) break;
+
+                var sessionEnd = currentTime.Add(TimeSpan.FromMinutes(duration));
+
+                // Skip past overlapping fixed busy slots
+                var conflict = dayBusySlots.FirstOrDefault(b => currentTime < b.EndTime && sessionEnd > b.StartTime);
+                if (conflict != null)
                 {
-                    int? chapterId = null;
-                    if (item.TryGetProperty("chapterId", out var cIdProp) && cIdProp.ValueKind == JsonValueKind.Number)
-                    {
-                        chapterId = cIdProp.GetInt32();
-                    }
-
-                    var dateStr = item.GetProperty("date").GetString()!;
-                    var startTimeStr = item.GetProperty("startTime").GetString()!;
-                    var endTimeStr = item.GetProperty("endTime").GetString()!;
-                    var title = item.GetProperty("title").GetString() ?? "Study Session";
-                    
-                    string description = "";
-                    if (item.TryGetProperty("description", out var descProp) && descProp.ValueKind == JsonValueKind.String)
-                    {
-                        description = descProp.GetString() ?? "";
-                    }
-
-                    var duration = item.GetProperty("duration").GetInt32();
-
-                    var date = DateTime.Parse(dateStr);
-                    var startTime = TimeSpan.Parse(startTimeStr);
-                    var endTime = TimeSpan.Parse(endTimeStr);
-
-                    schedulesToCreate.Add(new Schedule
-                    {
-                        UserId = dto.UserId,
-                        SubjectId = dto.SubjectId,
-                        ChapterId = chapterId,
-                        Title = title,
-                        Description = description,
-                        Date = DateTime.SpecifyKind(date, DateTimeKind.Utc),
-                        StartTime = startTime,
-                        EndTime = endTime,
-                        Duration = duration,
-                        Priority = 3,
-                        Status = ScheduleStatus.Pending,
-                        AiGenerated = true,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    });
+                    currentTime = conflict.EndTime.Add(TimeSpan.FromMinutes(5));
+                    sessionEnd = currentTime.Add(TimeSpan.FromMinutes(duration));
+                    if (currentTime.TotalHours >= 22) break;
+                    continue;
                 }
+
+                if (sessionEnd.TotalHours > 23) break;
+
+                schedulesToCreate.Add(new Schedule
+                {
+                    UserId = dto.UserId,
+                    SubjectId = dto.SubjectId,
+                    ChapterId = item.Chapter.Id,
+                    Title = item.Lesson.Title,
+                    Description = item.Chapter.Title,
+                    Date = DateTime.SpecifyKind(date, DateTimeKind.Utc),
+                    StartTime = currentTime,
+                    EndTime = sessionEnd,
+                    Duration = duration,
+                    Priority = 3,
+                    Status = ScheduleStatus.Pending,
+                    AiGenerated = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                });
+
+                currentTime = sessionEnd.Add(TimeSpan.FromMinutes(15)); // 15-min break
+                minutesUsedToday += duration + 15;
+                lessonIdx++;
             }
+        }
+
+        // Add exam day entry
+        if (examDate.HasValue)
+        {
+            schedulesToCreate.Add(new Schedule
+            {
+                UserId = dto.UserId,
+                SubjectId = dto.SubjectId,
+                ChapterId = null,
+                Title = $"📝 EXAM: {subject.Title}",
+                Description = "Final exam day. Review your notes and good luck!",
+                Date = DateTime.SpecifyKind(examDate.Value, DateTimeKind.Utc),
+                StartTime = TimeSpan.FromHours(7),
+                EndTime = TimeSpan.FromHours(9),
+                Duration = 120,
+                Priority = 5,
+                Status = ScheduleStatus.Pending,
+                AiGenerated = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
         }
 
         if (schedulesToCreate.Any())
