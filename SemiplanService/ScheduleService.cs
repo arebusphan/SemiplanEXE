@@ -358,7 +358,7 @@ The JSON must have this exact structure (with week1, week2, etc. containing the 
         var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync(
-            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={_geminiApiKey}",
+            $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={_geminiApiKey}",
             content);
 
         if (!response.IsSuccessStatusCode)
