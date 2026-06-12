@@ -260,7 +260,7 @@ public class ScheduleService
 
             // Busy slots for this day of week (sorted)
             var dayBusySlots = fixedBusySlots
-                .Where(a => a.DayOfWeek == (int)date.DayOfWeek)
+                .Where(a => a.DayOfWeek == date.DayOfWeek)
                 .OrderBy(a => a.StartTime)
                 .ToList();
 
