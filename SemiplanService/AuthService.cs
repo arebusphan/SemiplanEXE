@@ -139,4 +139,41 @@ public class AuthService
             await _userRepository.UpdateUserAsync(user);
         }
     }
+
+    // ─── Admin User Management ────────────────────
+
+    public async Task<List<AdminUserDto>> GetAllUsersAsync()
+    {
+        var users = await _userRepository.GetAllUsersAsync();
+        return users.Select(u => new AdminUserDto
+        {
+            Id = u.Id,
+            Name = u.Name,
+            Email = u.Email,
+            Major = u.Major,
+            University = u.University,
+            Role = u.Role,
+            IsPremium = u.IsPremium,
+            CreatedAt = u.CreatedAt
+        }).ToList();
+    }
+
+    public async Task<bool> UpdateUserRoleAsync(int userId, UpdateUserRoleDto dto)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        user.Role = dto.Role;
+        if (dto.IsPremium.HasValue)
+            user.IsPremium = dto.IsPremium.Value;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _userRepository.UpdateUserAsync(user);
+        return true;
+    }
+
+    public async Task<bool> DeleteUserAsync(int userId)
+    {
+        return await _userRepository.DeleteUserAsync(userId);
+    }
 }

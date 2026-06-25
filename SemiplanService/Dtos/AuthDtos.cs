@@ -37,3 +37,21 @@ public class LoginResponseDto
     public string Token { get; set; } = null!;
     public UserResponseDto User { get; set; } = null!;
 }
+
+public class AdminUserDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string Major { get; set; } = null!;
+    public string University { get; set; } = null!;
+    public string Role { get; set; } = "user";
+    public bool IsPremium { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+public class UpdateUserRoleDto
+{
+    public string Role { get; set; } = "user";
+    public bool? IsPremium { get; set; }
+}

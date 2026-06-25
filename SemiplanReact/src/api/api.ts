@@ -281,4 +281,23 @@ export const getPayOsPaymentStatus = async () => {
     return res.data;
 };
 
+// ─── Admin User Management ───────────────────────
+export const getAdminAllUsers = async () => {
+    const res = await API.get("/admin/users");
+    return res.data;
+};
+
+export const adminUpdateUser = async (
+    userId: number,
+    data: { role: string; isPremium?: boolean }
+) => {
+    const res = await API.put(`/admin/users/${userId}`, data);
+    return res.data;
+};
+
+export const adminDeleteUser = async (userId: number) => {
+    const res = await API.delete(`/admin/users/${userId}`);
+    return res.data;
+};
+
 export default API;
