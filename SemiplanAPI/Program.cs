@@ -10,6 +10,12 @@ using PayOS;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Disable reload on change to prevent inotify limit issues in Docker/Render
+foreach (var source in builder.Configuration.Sources.OfType<Microsoft.Extensions.Configuration.Json.JsonConfigurationSource>())
+{
+    source.ReloadOnChange = false;
+}
+
 // Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
