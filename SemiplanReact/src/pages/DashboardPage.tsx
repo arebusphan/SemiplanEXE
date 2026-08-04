@@ -34,6 +34,10 @@ export default function DashboardPage() {
   }, [location]);
 
   useEffect(() => {
+    if (user?.role === 'admin') {
+      navigate('/admin', { replace: true });
+      return;
+    }
     if (user) {
       getDashboard()
         .then(data => {
@@ -42,7 +46,7 @@ export default function DashboardPage() {
         .catch(err => console.error(err))
         .finally(() => setLoading(false));
     }
-  }, [user]);
+  }, [user, navigate]);
 
   if (loading) {
     return (

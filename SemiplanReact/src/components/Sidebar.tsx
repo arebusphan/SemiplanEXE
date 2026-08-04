@@ -23,10 +23,9 @@ export default function Sidebar() {
   const location = useLocation()
   const { user } = useAuth()
 
-  const dynamicNavItems = [
-    ...navItems,
-    ...(user?.role === 'admin' ? [{ to: '/admin', icon: ShieldCheck, label: 'Admin Panel' }] : [])
-  ]
+  const dynamicNavItems = user?.role === 'admin' 
+    ? [{ to: '/admin', icon: ShieldCheck, label: 'Admin Dashboard' }]
+    : navItems;
 
   return (
     <aside
