@@ -111,6 +111,7 @@ builder.Services.AddScoped<ProgressService>();
 builder.Services.AddScoped<UserAvailabilityService>();
 builder.Services.AddScoped<PremiumService>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<AdminDashboardService>();
 
 // PayOS payment gateway
 var payOsClientId = builder.Configuration["PayOS:ClientId"] ?? "";

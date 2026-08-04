@@ -11,10 +11,12 @@ namespace SemiplanAPI;
 public class AdminController : ControllerBase
 {
     private readonly AuthService _authService;
+    private readonly AdminDashboardService _dashboardService;
 
-    public AdminController(AuthService authService)
+    public AdminController(AuthService authService, AdminDashboardService dashboardService)
     {
         _authService = authService;
+        _dashboardService = dashboardService;
     }
 
     private bool IsAdmin()
@@ -24,6 +26,14 @@ public class AdminController : ControllerBase
         // Alternatively, add a Role claim to the JWT in AuthService.
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return userId != null; // actual admin check done inside service
+    }
+
+    /// <summary>GET api/admin/dashboard — admin dashboard statistics</summary>
+    [HttpGet("dashboard")]
+    public async Task<IActionResult> GetDashboard()
+    {
+        var dashboard = await _dashboardService.GetDashboardAsync();
+        return Ok(dashboard);
     }
 
     /// <summary>GET api/admin/users — list all users (admin only)</summary>

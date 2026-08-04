@@ -281,6 +281,12 @@ export const getPayOsPaymentStatus = async () => {
     return res.data;
 };
 
+// ─── Admin Dashboard ─────────────────────────────
+export const getAdminDashboard = async () => {
+    const res = await API.get("/admin/dashboard");
+    return res.data;
+};
+
 // ─── Admin User Management ───────────────────────
 export const getAdminAllUsers = async () => {
     const res = await API.get("/admin/users");
