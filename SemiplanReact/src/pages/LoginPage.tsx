@@ -18,7 +18,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await login(email, password)
-      navigate('/')
+      navigate('/dashboard')
     } catch {
       setError('Invalid email or password')
     } finally {

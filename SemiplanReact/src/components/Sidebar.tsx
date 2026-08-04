@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/subjects', icon: BookOpen, label: 'Subjects' },
   { to: '/calendar', icon: CalendarDays, label: 'Calendar' },
   { to: '/settings', icon: Settings, label: 'Settings' },

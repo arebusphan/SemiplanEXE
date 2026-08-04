@@ -16,7 +16,7 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       await register(form)
-      navigate('/')
+      navigate('/dashboard')
     } catch {
       setError('Registration failed. Email may already exist.')
     } finally {
