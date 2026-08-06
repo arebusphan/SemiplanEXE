@@ -355,7 +355,7 @@ export default function CalendarPage() {
     );
 
     return (
-        <div className="h-[calc(100vh-8rem)] flex flex-col animate-fade-in-up relative overflow-hidden">
+        <div className="h-[88vh] min-h-[850px] flex flex-col animate-fade-in-up relative overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-800 mb-1">Calendar</h1>
